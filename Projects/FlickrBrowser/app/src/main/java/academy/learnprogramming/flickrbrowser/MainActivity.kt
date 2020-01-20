@@ -5,18 +5,23 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val TAG = "MainActivity"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate: called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        val getRawData = GetRawData(this)
+//        getRawData.setDownloadCompleteListener(this)
+        getRawData.execute("https://www.flickr.com/services/feeds/photos_public.gne?tags=android,oreo,sdk&tagmode=any&format=json&nojsoncallback=1")
 
 //        fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -46,4 +51,13 @@ class MainActivity : AppCompatActivity() {
 //    companion object {
 //        private const val TAG = "MainActivity"
 //    }
+
+    override fun onDownloadComplete(data: String, status: DownloadStatus){
+        if( status == DownloadStatus.OK){
+            Log.d(TAG, "onDownloadComplete: called, data is $data")
+        } else {
+            //download failed
+            Log.d(TAG, "onDownloadComplete: failed, with status $status. Error message is: $data")
+        }
+    }
 }
