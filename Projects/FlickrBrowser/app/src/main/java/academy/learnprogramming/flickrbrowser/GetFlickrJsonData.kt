@@ -2,6 +2,7 @@ package academy.learnprogramming.flickrbrowser
 
 import android.os.AsyncTask
 import android.util.Log
+import org.json.JSONException
 import org.json.JSONObject
 
 private const val TAG = "GetFlickrJsonData"
@@ -13,13 +14,16 @@ class GetFlickrJsonData(private val listener: OnDataAvailable) : AsyncTask<Strin
         fun onError(exception: Exception)
     }
 
-    override fun onPostExecute(result: ArrayList<Photo>?) {
+    override fun onPostExecute(result: ArrayList<Photo>) {
         Log.d(TAG, "onPostExecute: starts")
-        listener.onDataAvailable()
+        listener.onDataAvailable(result)
+        Log.d(TAG, "onPostExecute: ends")
     }
 
     override fun doInBackground(vararg params: String?): ArrayList<Photo> {
         Log.d(TAG, "doInBackground: starts")
+
+        val photoList = ArrayList<Photo>()
         try {
             val jsonData = JSONObject(params[0])
             val itemsArray = jsonData.getJSONArray("items")
@@ -33,9 +37,19 @@ class GetFlickrJsonData(private val listener: OnDataAvailable) : AsyncTask<Strin
                 val photoUrl = jsonMedia.getString("m")
                 val link = photoUrl.replaceFirst("_m.jpg", "_b.jpg")
 
-            }
-        } catch (exception: Exception) {
+                val photoObject = Photo(title, author, authorId, link, tags, photoUrl)
+                photoList.add(photoObject)
+                Log.d(TAG, "doInBackground $photoObject")
 
+            }
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Log.e(TAG, "doInBackground: Error processing Json data. ${e.message}")
+            cancel(true)
+            listener.onError(e)
         }
+
+        Log.d(TAG, "doInBackground: ends")
+        return photoList
     }
 }
