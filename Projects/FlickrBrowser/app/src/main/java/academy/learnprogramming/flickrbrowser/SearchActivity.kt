@@ -1,23 +1,18 @@
 package academy.learnprogramming.flickrbrowser
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 
-import kotlinx.android.synthetic.main.activity_search.*
+class SearchActivity : BaseActivity() {
 
-class SearchActivity : AppCompatActivity() {
+    private val TAG = "SearchActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: starts")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        setSupportActionBar(toolbar)
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        activateToolbar(true)
+        Log.d(TAG, "onCreate: ends")
     }
 
 }
